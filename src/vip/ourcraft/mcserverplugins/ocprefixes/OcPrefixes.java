@@ -17,7 +17,7 @@ public class OcPrefixes extends JavaPlugin {
     public void onEnable() {
         instance = this;
         this.settings = new Settings();
-        this.prefixManager = new PrefixManager(this);
+        this.prefixManager = new PrefixManager();
 
         if (!setupChat()) {
             getLogger().warning("Vault Chat Hook 失败!");
@@ -55,7 +55,7 @@ public class OcPrefixes extends JavaPlugin {
 
         FileConfiguration config = getConfig();
 
-        settings.setDefaultPrefix(config.getString("default_prefix"));
+        settings.setDefaultPrefixName(config.getString("default_prefix_name"));
     }
 
     public PrefixManager getPrefixManager() {

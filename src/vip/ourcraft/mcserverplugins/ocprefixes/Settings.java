@@ -1,13 +1,13 @@
 package vip.ourcraft.mcserverplugins.ocprefixes;
 
 public class Settings {
-    private String defaultPrefix;
+    private String defaultPrefixName;
 
-    public String getDefaultPrefix() {
-        return defaultPrefix;
+    public String getDefaultPrefixName() {
+        return defaultPrefixName;
     }
 
-    public void setDefaultPrefix(String defaultPrefix) {
-        this.defaultPrefix = defaultPrefix;
+    public void setDefaultPrefixName(String defaultPrefixName) {
+        this.defaultPrefixName = defaultPrefixName;
     }
 }

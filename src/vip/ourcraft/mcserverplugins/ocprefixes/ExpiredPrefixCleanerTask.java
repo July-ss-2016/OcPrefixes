@@ -20,10 +20,8 @@ public class ExpiredPrefixCleanerTask implements Runnable {
 
                 // 排除永久的
                 if (expiredTime != 0 && System.currentTimeMillis() > expiredTime) {
-                    String prefixName = prefix.getPrefixName();
-
-                    prefixPlayer.takePrefix(prefixName);
-                    Util.sendMsg(player, "&c您的称号 &e" + prefixName + " &c已到期!");
+                    prefixPlayer.takePrefix(prefix);
+                    Util.sendMsg(player, "&c您的称号 &e" + prefix.getPrefixName() + " &c已到期!");
                 }
             }
         }

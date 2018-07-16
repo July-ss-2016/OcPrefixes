@@ -50,11 +50,11 @@ public class Prefix {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Prefix prefix = (Prefix) o;
-        return prefixName != null && prefixName.equals(prefix.getPrefixName()) && expiredTime == prefix.getExpiredTime();
+        return Objects.equals(prefixName, prefix.prefixName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(prefixName, expiredTime);
+        return Objects.hash(prefixName);
     }
 }

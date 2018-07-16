@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class PrefixManager {
     private HashMap<String, PrefixPlayer> prefixPlayerMap;
 
-    public PrefixManager(OcPrefixes plugin) {
+    public PrefixManager() {
         this.prefixPlayerMap = new HashMap<>();
     }
 

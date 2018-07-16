@@ -31,20 +31,19 @@ public class PlayerCommand implements CommandExecutor {
             }
 
             Player bukkitPlayer = (Player) cs;
-            PrefixPlayer prefixPlayer = prefixManager.getPrefixPlayer(bukkitPlayer);
 
-            Util.sendMsgWithoutPrefix(bukkitPlayer, getPrefixesMsg(prefixPlayer));
+            Util.sendMsgWithoutPrefix(bukkitPlayer, getPrefixesMsg(prefixManager.getPrefixPlayer(bukkitPlayer)));
             return true;
         }
 
         // 切换称号
         if (args.length == 2 && args[0].equalsIgnoreCase("set")) {
+            int index;
+
             if (!Util.isPlayer(cs)) {
                 cs.sendMessage("命令执行者必须是玩家!");
                 return true;
             }
-
-            int index;
 
             try {
                 index = Integer.parseInt(args[1]);
@@ -57,20 +56,15 @@ public class PlayerCommand implements CommandExecutor {
             PrefixPlayer prefixPlayer = prefixManager.getPrefixPlayer(bukkitPlayer);
             List<Prefix> ownedPrefixes = prefixPlayer.getOwnedPrefixes();
 
-            if (index > ownedPrefixes.size()) {
-                Util.sendMsg(cs, "&c您只有 &e" + ownedPrefixes.size() + "个 &c称号, 而您输入的序号是 &e" + index + "&c, 输入 &e/prefix info &c来查看拥有的称号!");
+            if (index > ownedPrefixes.size() || index <= 0) {
+                Util.sendMsg(cs, "&c您有 &e" + ownedPrefixes.size() + "个 &c称号, 而您输入的序号是 &e" + index + "&c, 输入 &e/prefix info &c来查看拥有的称号!");
                 return true;
             }
 
+            // 新称号(自有的)
             Prefix newCurrentPrefix = ownedPrefixes.get(index - 1);
-            String newCurrentPrefixName = newCurrentPrefix.isDefaultPrefix() ? null : newCurrentPrefix.getPrefixName(); // 因为默认称号是不存储的，直接设置的话会产生not owned exception，而null是设置成默认称号正确方式
 
-            if (prefixPlayer.setCurrentPrefix(newCurrentPrefixName)) {
-                Util.sendMsg(cs, "&d成功将称号切换至: " + newCurrentPrefix.getPrefixName());
-                return true;
-            }
-
-            Util.sendMsg(cs, "&c切换称号失败, 请联系管理员!");
+            Util.sendMsg(cs, prefixPlayer.setCurrentPrefix(newCurrentPrefix) ? "&d成功将称号切换至: " + newCurrentPrefix.getPrefixName() : "&c切换称号失败, 请联系管理员!");
             return true;
         }
 
@@ -78,6 +72,7 @@ public class PlayerCommand implements CommandExecutor {
         Util.sendMsg(cs, "&c/prefix info &b- &c查看称号仓库");
         Util.sendMsg(cs, "&c/prefix set <序号> &b- &c切换称号");
 
+        // 玩家的命令execute已经到此结束了，下面的是管理员指令了
         if (!isAdmin) {
             return true;
         }
@@ -91,12 +86,12 @@ public class PlayerCommand implements CommandExecutor {
         // 重载
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             plugin.loadConfig();
-            prefixManager.unloadAllPrefixPlayers();
+            prefixManager.unloadAllPrefixPlayers(); // 同时重载PrefixPlayers
             cs.sendMessage("ok.");
             return true;
         }
 
-        // 查看其它玩家的称号仓库
+        // 查看玩家的称号仓库
         if (args.length == 2 && args[0].equalsIgnoreCase("look")) {
             Player player = Bukkit.getPlayer(args[1]);
 
@@ -111,11 +106,11 @@ public class PlayerCommand implements CommandExecutor {
             return true;
         }
 
-        // 给予称号
+        // 给予称号或续费称号
         if (args.length == 4 && args[0].equalsIgnoreCase("give")) {
             Player player = Bukkit.getPlayer(args[1]);
-            String prefix = args[2];
-            int day; // 0 = forever
+            String prefixName = args[2];
+            int day;
 
             if (!Util.isPlayerOnline(player)) {
                 cs.sendMessage(args[1] + " 玩家不在线.");
@@ -130,12 +125,21 @@ public class PlayerCommand implements CommandExecutor {
             }
 
             PrefixPlayer prefixPlayer = prefixManager.getPrefixPlayer(player);
-            Prefix oldPrefix = prefixPlayer.getPrefixFromOwnedPrefixes(prefix);
+            Prefix prefix = prefixPlayer.getPrefixFromOwnedPrefixes(prefixName);
+            long expiredTime;
 
             // 续费，不存在则创建
-            prefixPlayer.givePrefix(prefix, day == 0 ? 0 : oldPrefix == null ? System.currentTimeMillis() + day * 86400000L : oldPrefix.getExpiredTime() + day * 86400000L);
-            prefixPlayer.setCurrentPrefix(prefix);
-            cs.sendMessage("ok.");
+            prefixPlayer.givePrefix(prefixName, day == 0 ? 0 : prefix == null ? System.currentTimeMillis() + day * 86400000L
+                    : (expiredTime = prefix.getExpiredTime()) == 0 ? System.currentTimeMillis() + day * 86400000L : expiredTime + day * 86400000L); // 当称号为0永久时，不能采用续费的方式
+            boolean result = prefixPlayer.setCurrentPrefix(prefix);
+
+            if (result) {
+                Util.sendMsg(player, "&d恭喜您获得称号: " + prefixName);
+                // 切换到新称号
+                prefixPlayer.setCurrentPrefix(prefixPlayer.getPrefixFromOwnedPrefixes(prefixName));
+            }
+
+            cs.sendMessage(result ? "ok" : "no");
             return true;
         }
 
@@ -159,7 +163,7 @@ public class PlayerCommand implements CommandExecutor {
                 return true;
             }
 
-            if (index > ownedPrefixes.size()) {
+            if (index > ownedPrefixes.size() || index <= 0) {
                 cs.sendMessage("序号越界!");
                 return true;
             }
@@ -171,7 +175,7 @@ public class PlayerCommand implements CommandExecutor {
                 return true;
             }
 
-            cs.sendMessage(prefixPlayer.takePrefix(prefix.getPrefixName()) ? "成功." : "失败.");
+            cs.sendMessage(prefixPlayer.takePrefix(prefix) ? "ok" : "no");
             return true;
         }
 
