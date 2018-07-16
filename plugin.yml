@@ -1,0 +1,7 @@
+name: OcPrefixes
+main: vip.ourcraft.mcserverplugins.ocprefixes.OcPrefixes
+author: July_ss
+version: 1.0.0
+depend: [Vault]
+commands:
+  prefix:
