@@ -35,6 +35,7 @@ public class OcPrefixes extends JavaPlugin {
 
         loadConfig();
         getCommand("prefix").setExecutor(new PlayerCommand(this));
+        Bukkit.getPluginManager().registerEvents(new PrefixListener(this), this);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> Bukkit.getScheduler().runTask(instance, new ExpiredPrefixCleanerTask(this)), 0L, 20L);
         getLogger().info("初始化完毕!");
     }

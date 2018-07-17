@@ -74,12 +74,10 @@ public class PrefixPlayer {
         return ownedPrefixes.get(prefixName);
     }
 
-    // 没有则返回默认称号
     public List<Prefix> getOwnedPrefixes() {
         return new ArrayList<>(ownedPrefixes.values());
     }
 
-    // 没有则返回默认称号
     public Prefix getCurrentPrefix() {
         return currentPrefix;
     }
@@ -95,13 +93,18 @@ public class PrefixPlayer {
 
         if (save()) {
             load();
-            // vault更新称号
-            plugin.getVaultChat().setPlayerPrefix(player, getCurrentPrefix().getPrefixName());
+            updateCurrentPrefix();
 
             return true;
         }
 
         return false;
+    }
+
+    // 更新当前称号
+    public void updateCurrentPrefix() {
+        // vault更新称号
+        plugin.getVaultChat().setPlayerPrefix(player, getCurrentPrefix().getPrefixName());
     }
 
     // 给予永久称号
@@ -160,7 +163,7 @@ public class PrefixPlayer {
         return false;
     }
 
-    // 得到过期时间
+    // 得到称号过期时间
     private long getPrefixExpiredTime(String prefixName) {
         return playerDataYml.getLong("owned_prefixes." + prefixName + ".expired_time", -1);
     }

@@ -23,7 +23,7 @@ public class PlayerCommand implements CommandExecutor {
     public boolean onCommand(CommandSender cs, Command cmd, String label, String[] args) {
         boolean isAdmin = cs.hasPermission("OcPrefixes.admin");
 
-        // 个人信息
+        // 个人称号信息
         if (args.length == 1 && args[0].equalsIgnoreCase("info")) {
             if (!Util.isPlayer(cs)) {
                 cs.sendMessage("命令执行者必须是玩家!");
@@ -80,9 +80,6 @@ public class PlayerCommand implements CommandExecutor {
 
 
 
-
-
-
         // 重载
         if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
             plugin.loadConfig();
@@ -129,9 +126,9 @@ public class PlayerCommand implements CommandExecutor {
             long expiredTime;
 
             // 续费，不存在则创建
-            prefixPlayer.givePrefix(prefixName, day == 0 ? 0 : prefix == null ? System.currentTimeMillis() + day * 86400000L
-                    : (expiredTime = prefix.getExpiredTime()) == 0 ? System.currentTimeMillis() + day * 86400000L : expiredTime + day * 86400000L); // 当称号为0永久时，不能采用续费的方式
-            boolean result = prefixPlayer.setCurrentPrefix(prefix);
+            boolean result = prefixPlayer.givePrefix(prefixName, day == 0 ? 0 : prefix == null ? System.currentTimeMillis() + day * 86400000L
+                    : (expiredTime = prefix.getExpiredTime()) == 0 ? System.currentTimeMillis() + day * 86400000L : expiredTime + day * 86400000L)
+                    && prefixPlayer.setCurrentPrefix(prefix); // 当称号为0永久时，不能采用续费的方式
 
             if (result) {
                 Util.sendMsg(player, "&d恭喜您获得称号: " + prefixName);
@@ -195,7 +192,7 @@ public class PlayerCommand implements CommandExecutor {
         msg.append("\n");
 
         for (Prefix prefix : prefixPlayer.getOwnedPrefixes()) {
-            msg.append(prefix.equals(currentPrefix) ? "&d" : "&f").append(counter + 1).append(".").append(" &f").append(prefix.getPrefixName()).append(" &a-> &f").append(prefix.getExpiredTime() == 0 ? "永不过期" : SDF.format(prefix.getExpiredTime()) + " 到期");
+            msg.append(prefix.equals(currentPrefix) ? "&d&l" : "&f").append(counter + 1).append(".").append(" &f").append(prefix.getPrefixName()).append(" &a-> &f").append(prefix.getExpiredTime() == 0 ? "永不过期" : SDF.format(prefix.getExpiredTime()) + " 到期");
             msg.append("\n");
             ++ counter;
         }
