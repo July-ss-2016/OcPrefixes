@@ -68,12 +68,11 @@ public class PlayerCommand implements CommandExecutor {
             return true;
         }
 
-        // 帮助信息
-        Util.sendMsg(cs, "&c/prefix info &b- &c查看称号仓库");
-        Util.sendMsg(cs, "&c/prefix set <序号> &b- &c切换称号");
-
         // 玩家的命令execute已经到此结束了，下面的是管理员指令了
         if (!isAdmin) {
+            // 帮助信息
+            Util.sendMsg(cs, "&c/prefix info &b- &c查看称号仓库");
+            Util.sendMsg(cs, "&c/prefix set <序号> &b- &c切换称号");
             return true;
         }
 

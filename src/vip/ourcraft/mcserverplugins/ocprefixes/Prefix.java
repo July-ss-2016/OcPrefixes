@@ -50,7 +50,7 @@ public class Prefix {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Prefix prefix = (Prefix) o;
-        return Objects.equals(prefixName, prefix.prefixName);
+        return Objects.equals(prefixName, prefix.getPrefixName());
     }
 
     @Override

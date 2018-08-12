@@ -13,6 +13,10 @@ public class ExpiredPrefixCleanerTask implements Runnable {
     @Override
     public void run() {
         for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!player.isOnline()) {
+                continue;
+            }
+
             PrefixPlayer prefixPlayer = prefixManager.getPrefixPlayer(player);
 
             for (Prefix prefix : prefixPlayer.getOwnedPrefixes()) {

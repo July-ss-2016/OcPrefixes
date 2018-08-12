@@ -1,6 +1,7 @@
 package vip.ourcraft.mcserverplugins.ocprefixes;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -17,9 +18,13 @@ public class PrefixListener implements Listener {
 
     @EventHandler
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             // 更新当前称号
-            prefixManager.getPrefixPlayer(event.getPlayer()).updateCurrentPrefix();
+            if (player.isOnline()) {
+                prefixManager.getPrefixPlayer(event.getPlayer()).updateCurrentPrefix();
+            }
         }, 10L);
     }
 }
